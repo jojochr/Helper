@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -63,7 +65,7 @@ namespace Helper.Logging
         throw new ArgumentException("Logging exception: Invalid filepath");
 
       if (!Path.Exists(Path.GetDirectoryName(absoluteFilePath)))
-        Directory.CreateDirectory(Path.GetDirectoryName(absoluteFilePath));
+        _ = Directory.CreateDirectory(Path.GetDirectoryName(absoluteFilePath));
 
       if (timeStampInLogfileName)
         absoluteFilePath = Path.GetDirectoryName(absoluteFilePath) + @"\" + Path.GetFileNameWithoutExtension(absoluteFilePath) + DateTime.Now.ToString("-yyyy-MM-dd_HH-mm-ss") + Path.GetExtension(absoluteFilePath);
