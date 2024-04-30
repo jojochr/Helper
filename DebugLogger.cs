@@ -61,10 +61,7 @@ namespace Helper.Logging
     /// <exception cref="ArgumentException"></exception>
     private void Log(string absoluteFilePath, string loggerName, bool timeStampInLogfileName, string logContent = "")
     {
-      if (!Path.IsPathFullyQualified((ReadOnlySpan<char>)absoluteFilePath))
-        throw new ArgumentException("Logging exception: Invalid filepath");
-
-      if (!Path.Exists(Path.GetDirectoryName(absoluteFilePath)))
+      if (!File.Exists(Path.GetDirectoryName(absoluteFilePath)))
         _ = Directory.CreateDirectory(Path.GetDirectoryName(absoluteFilePath));
 
       if (timeStampInLogfileName)
