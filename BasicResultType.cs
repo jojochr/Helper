@@ -29,8 +29,43 @@ public readonly struct Result<T, E> {
         public static implicit operator Result<T, E>(T v) => new(v, default(E), true);
         public static implicit operator Result<T, E>(E e) => new(default(T), e, false);
 
+        /// <summary>
+        /// This can be used to handle both the success case and the error case and output a specified type
+        /// </summary>
         public R Match<R>(
                 Func<T, R> success,
                 Func<E, R> failure) =>
             _success ? success(Value) : failure(Error);
+    
+    /// <summary>
+    /// This can be used to transform the values inside a result without resolving it.
+    /// </summary>
+    /// <param name="success">This method gets run in the value case with the value as parameter</param>
+    /// <param name="failure">This method gest run in the error case with the error as parameter</param>
+    /// <returns>The result with its transformed values</returns>
+    public Result<T, E> Transform(Action<T> success, Action<E> failure) {
+        if(_success) {
+            success(Value);
+            return this;
+        }
+
+        failure(Error);
+        return this;
     }
+
+    /// <summary>
+    /// This can be used to resolve the result.
+    /// </summary>
+    /// <param name="success"></param>
+    /// <param name="failure"></param>
+    /// <returns>This returns:<br></br>True -> If the result contains a value.<br></br>False -> If the Result contains an error.</returns>
+    public bool Resolve(Action<T> success, Action<E> failure) {
+        if(_success) {
+            success(Value);
+            return true;
+        }
+
+        failure(Error);
+        return false;
+    }
+}
