@@ -1,71 +1,52 @@
-/// <summary>
-/// This implementation is very basic and only meant for light weight use and starting off with the Result type.<br></br>
-/// Please either look for a Result-implementation with more Features like Fluent.Results if needed or, if you really want to, extend this type.
-/// </summary>
-public readonly struct Result<T, E> {
-    private readonly bool _success;
-    public readonly T Value;
-    public readonly E Error;
+using System;
 
-    private Result(T v, E e, bool success)
-    {
-        Value = v;
-        Error = e;
+/// <summary>
+/// This implementation is very basic and only meant for light weight use and starting off with the Result type
+/// </summary>
+public readonly struct Result<TValue, TError> {
+    private readonly bool _success;
+    private readonly TValue _value;
+    private readonly TError _error;
+
+    private Result(TValue v, TError e, bool success) {
+        _value = v;
+        _error = e;
         _success = success;
     }
 
+    /// <summary>
+    /// Indicates if this instance contains a Value or an Error<br></br>
+    /// True -> Contains Value
+    /// False -> Contains Error
+    /// </summary>
     public bool IsOk => _success;
 
-    public static Result<T, E> Ok(T v)
-    {
-        return new(v, default(E), true);
-    }
+    public static Result<TValue, TError> Ok(TValue v) => new(v, default(TError), true);
+    public static Result<TValue, TError> Err(TError e) => new(default(TValue), e, false);
 
-    public static Result<T, E> Err(E e)
-    {
-        return new(default(T), e, false);
-    }
-
-    public static implicit operator Result<T, E>(T v) => new(v, default(E), true);
-    public static implicit operator Result<T, E>(E e) => new(default(T), e, false);
+    public static implicit operator Result<TValue, TError>(TValue v) => new(v, default(TError), true);
+    public static implicit operator Result<TValue, TError>(TError e) => new(default(TValue), e, false);
 
     /// <summary>
-    /// This can be used to handle both the success case and the error case and output a specified type
+    /// This method is used either to handle both happy- and error case to convert it into a single Type,<br></br>
+    /// Or to convert one Result, Type into another Result Type just like a "Map" or "Select" method
     /// </summary>
-    public R Match<R>(
-            Func<T, R> success,
-            Func<E, R> failure) =>
-        _success ? success(Value) : failure(Error);
-    
-    /// <summary>
-    /// This can be used to transform the values inside a result without resolving it.
-    /// </summary>
-    /// <param name="success">This method gets run in the value case with the value as parameter</param>
-    /// <param name="failure">This method gest run in the error case with the error as parameter</param>
-    /// <returns>The result with its transformed values</returns>
-    public Result<T, E> Transform(Action<T> success, Action<E> failure) {
-        if(_success) {
-            success(Value);
-            return this;
-        }
+    public TResult Match<TResult>(Func<TValue, TResult> success, Func<TError, TResult> failure) {
+        if(_success)
+            return success(_value);
 
-        failure(Error);
-        return this;
+        return failure(_value);
     }
 
     /// <summary>
-    /// This can be used to resolve the result.
+    /// This can be used to dump the contents of a result type<br></br>
+    /// This method is dangerous and should preferably not end up in production code<br></br>
+    /// Only use this if you know what you are doing
     /// </summary>
-    /// <param name="success"></param>
-    /// <param name="failure"></param>
-    /// <returns>This returns:<br></br>True -> If the result contains a value.<br></br>False -> If the Result contains an error.</returns>
-    public bool Resolve(Action<T> success, Action<E> failure) {
-        if(_success) {
-            success(Value);
-            return true;
-        }
-
-        failure(Error);
-        return false;
+    public bool Dump(out TValue value, out TError error, out bool success) {
+        value = _value;
+        error = _error;
+        success = _success;
+        return _success;
     }
 }
