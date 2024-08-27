@@ -21,11 +21,11 @@ public readonly struct Result<TValue, TError> {
     /// </summary>
     public bool IsOk => _success;
 
-    public static Result<TValue, TError> Ok(TValue v) => new(v, default(TError), true);
-    public static Result<TValue, TError> Err(TError e) => new(default(TValue), e, false);
+    public static Result<TValue, TError> Ok(TValue v) => new(v, default(TError)!, true);
+    public static Result<TValue, TError> Err(TError e) => new(default(TValue)!, e, false);
 
-    public static implicit operator Result<TValue, TError>(TValue v) => new(v, default(TError), true);
-    public static implicit operator Result<TValue, TError>(TError e) => new(default(TValue), e, false);
+    public static implicit operator Result<TValue, TError>(TValue v) => new(v, default(TError)!, true);
+    public static implicit operator Result<TValue, TError>(TError e) => new(default(TValue)!, e, false);
 
     /// <summary>
     /// This method is used either to handle both happy- and error case to convert it into a single Type,<br></br>
@@ -35,7 +35,7 @@ public readonly struct Result<TValue, TError> {
         if(_success)
             return success(_value);
 
-        return failure(_value);
+        return failure(_error);
     }
 
     /// <summary>
