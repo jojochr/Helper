@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)BasicOptionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BasicResultType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConsoleManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DebugLogger.cs" />
   </ItemGroup>
 </Project>
